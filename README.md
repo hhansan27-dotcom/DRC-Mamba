@@ -118,23 +118,6 @@ Equivalent launch scripts are in [`scripts/`](scripts/). Run artifacts are writt
 
 The tabulated results use a `0.5` binary threshold, eight-connected components, and no morphological post-processing. See [`drc_mamba/metrics.py`](drc_mamba/metrics.py) for the implementation.
 
-## Repository map
-
-```text
-drc_mamba/       model, data loading, training engine, losses, metrics, utilities
-pretrained/      three best-IoU checkpoints (Git LFS) and checksums
-scripts/         dataset-specific training commands
-tests/           metric sanity tests
-docs/figures/    figures extracted from the accompanying manuscript
-dataset/         layout documentation; no dataset files
-train.py         training entry point
-evaluate.py      evaluation entry point
-```
-
-The three checkpoints share the released architecture: 22.30 million parameters with channel progression `64 → 128 → 256 → 256`. See [pretrained/README.md](pretrained/README.md) for compatibility and SHA-256 checksums. The manuscript reports 21.45 GFLOPs for the model.
-
-Run the included metric tests with `python -m pytest -q`.
-
 ## Citation
 
 If this repository supports your research, please cite the manuscript. It is currently a submitted preprint; no publication DOI is claimed here.
