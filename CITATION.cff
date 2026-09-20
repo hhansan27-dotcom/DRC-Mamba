@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use DRC-Mamba in your research, please cite the manuscript."
+title: "DRC-Mamba"
+type: software
+authors:
+  - family-names: Zhang
+    given-names: Tongliga
+    email: tongligazhang@std.uestc.edu.cn
+  - family-names: Sun
+    given-names: Yingjie
+    email: yingjiesun@std.uestc.edu.cn
+  - family-names: Huang
+    given-names: Shize
+  - family-names: Li
+    given-names: Hongjie
+  - family-names: Zheng
+    given-names: Yitao
+    email: yitaozheng@uestc.edu.cn
+  - family-names: Zhang
+    given-names: Ping
+    email: pingzh@uestc.edu.cn
+preferred-citation:
+  type: generic
+  title: "Decomposition-Guided Response-Conditioning Mamba with Deferred Decision for Infrared Small Target Detection"
+  authors:
+    - family-names: Zhang
+      given-names: Tongliga
+    - family-names: Sun
+      given-names: Yingjie
+    - family-names: Huang
+      given-names: Shize
+    - family-names: Li
+      given-names: Hongjie
+    - family-names: Zheng
+      given-names: Yitao
+    - family-names: Zhang
+      given-names: Ping
+  year: 2026
+  url: "https://github.com/hhansan27-dotcom/DRC-Mamba"

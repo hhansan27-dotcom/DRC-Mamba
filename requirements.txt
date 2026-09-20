@@ -1,0 +1,7 @@
+torch>=2.1
+mamba-ssm>=2.2
+numpy>=1.24
+Pillow>=9.5
+scikit-image>=0.21
+tqdm>=4.66
+pytest>=7.4

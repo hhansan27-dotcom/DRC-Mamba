@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Training outputs / locally generated checkpoints
+runs/
+result/
+checkpoints/
+wandb/
+tensorboard/
+*.log
+*.tmp
+*.bak
+*.swp
+*.pt
+*.pth
+*.pth.tar
+
+# Track only the curated release checkpoints in pretrained/
+!pretrained/drc_mamba_nuaa_sirst_best_iou.pth
+!pretrained/drc_mamba_nudt_sirst_best_iou.pth
+!pretrained/drc_mamba_irstd1k_best_iou.pth
+
+# Keep local datasets and split files out of the public repository
+/dataset/**
+!/dataset/README.md
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
