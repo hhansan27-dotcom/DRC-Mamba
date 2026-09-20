@@ -33,7 +33,7 @@ DRC-Mamba consists of four coordinated components:
 
 *Complementary response fields for representative infrared scenes.*
 
-### Qualitative comparison
+### Qualitative Comparison
 
 ![Qualitative comparison](docs/figures/fig7-qualitative-comparison.png)
 
@@ -54,7 +54,15 @@ The experiments were conducted with the following environment:
 | NumPy | 1.26.4 |
 | scikit-image | 0.22.0 |
 
-A recommended installation is:
+Clone the repository:
+
+```bash
+git lfs install
+git clone https://github.com/hhansan27-dotcom/DRC-Mamba.git
+cd DRC-Mamba
+```
+
+Create the environment and install the dependencies:
 
 ```bash
 conda create -n drc-mamba python=3.10 -y
@@ -62,14 +70,6 @@ conda activate drc-mamba
 
 pip install torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
-```
-
-Clone the repository with:
-
-```bash
-git lfs install
-git clone https://github.com/hhansan27-dotcom/DRC-Mamba.git
-cd DRC-Mamba
 ```
 
 ## Datasets
@@ -80,15 +80,7 @@ The datasets used in the experiments are publicly available from the following r
 - **NUAA-SIRST:** [YimianDai/sirst](https://github.com/YimianDai/sirst)
 - **NUDT-SIRST:** [YeRen123455/Infrared-Small-Target-Detection](https://github.com/YeRen123455/Infrared-Small-Target-Detection)
 
-The fixed train/test partitions used in the experiments are:
-
-| Dataset | Training images | Test images | Split |
-|---|---:|---:|---|
-| NUAA-SIRST | 341 | 86 | 80/20 |
-| NUDT-SIRST | 663 | 664 | 50/50 |
-| IRSTD-1K | 800 | 201 | 80/20 |
-
-Arrange the datasets as follows:
+The train/test split files used in our experiments are included in this repository. After downloading the datasets, arrange the images and masks as follows:
 
 ```text
 dataset/
@@ -112,11 +104,11 @@ dataset/
         └── test.txt
 ```
 
-Each split file contains one image ID per line without the file extension. Images and masks are read as single-channel images; `.png` is used by default.
+Each split file contains one image ID per line without the file extension. Images and masks are read as single-channel images, and `.png` is used by default.
 
 ## Evaluation
 
-Evaluate the released checkpoints using:
+Evaluate the released checkpoints using the following commands. The binary threshold used for the reported results is **0.5**.
 
 ### NUAA-SIRST
 
@@ -145,7 +137,7 @@ python evaluate.py \
   --split 80_20
 ```
 
-Predictions are resized to the original image resolution before metric computation. The binary threshold used for the tabulated results is **0.5**.
+Predictions are resized to the original image resolution before metric computation.
 
 ## Training
 
@@ -173,7 +165,7 @@ python train.py --dataset NUDT-SIRST --split 50_50
 python train.py --dataset IRSTD-1K --split 80_20
 ```
 
-The best checkpoints are selected according to validation/test IoU during training and saved under the corresponding run directory.
+Dataset-specific launch scripts are also provided in [`scripts/`](scripts/).
 
 ## Evaluation Protocol
 
@@ -185,7 +177,7 @@ The evaluation protocol follows the manuscript:
 - **Pd:** target-level detection probability based on one-to-one nearest-centroid matching of eight-connected components.
 - **Fa:** pixels belonging to unmatched predicted components per million evaluated pixels.
 
-A predicted component is matched to a ground-truth target when the centroid distance is less than **3 pixels**. The threshold is fixed at **0.5** for the tabulated results. No connected-component filtering or morphological post-processing is applied.
+A predicted component is matched to a ground-truth target when the centroid distance is less than **3 pixels**. The binary threshold is fixed at **0.5** for the tabulated results. No connected-component filtering or morphological post-processing is applied.
 
 ## Citation
 
