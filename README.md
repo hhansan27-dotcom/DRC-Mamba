@@ -2,46 +2,69 @@
 
 **Decomposition-Guided Response-Conditioning Mamba with Deferred Decision for Infrared Small Target Detection**
 
-Official PyTorch implementation and pretrained checkpoints for infrared small target detection (IRSTD). The accompanying manuscript is a preprint submitted to *Infrared Physics & Technology*.
+Official PyTorch implementation of **DRC-Mamba** for infrared small target detection (IRSTD).
 
-DRC-Mamba preserves plausible weak-target responses while gathering structural context. It describes ambiguous observations with complementary response fields, retains candidate details, reasons across multiple scan paths, and conditions final suppression on target-supporting evidence.
+DRC-Mamba follows a deferred-decision strategy for weak-target detection in complex infrared scenes. Instead of immediately suppressing locally ambiguous responses, the network first constructs complementary response descriptions and preserves plausible target candidates. Long-range structural context is then introduced through multi-path Mamba reasoning, followed by response-conditioned decoding for final target reconstruction and interference suppression.
 
-## At a glance
+## Results
 
-| Dataset | Train / test | IoU ↑ | F1 ↑ | nIoU ↑ | Pd ↑ | Fa ↓ | Checkpoint |
+Performance on the three IRSTD benchmarks is summarized below.
+
+| Dataset | Train / Test | IoU ↑ | F1 ↑ | nIoU ↑ | Pd ↑ | Fa ↓ | Pretrained model |
 |---|---:|---:|---:|---:|---:|---:|---|
-| NUAA-SIRST | 341 / 86 | **82.91** | 90.66 | 82.16 | 99.08 | 0.99 | [NUAA-SIRST](pretrained/drc_mamba_nuaa_sirst_best_iou.pth) |
-| NUDT-SIRST | 663 / 664 | **89.65** | 94.54 | 90.39 | 98.62 | 6.69 | [NUDT-SIRST](pretrained/drc_mamba_nudt_sirst_best_iou.pth) |
-| IRSTD-1K | 800 / 201 | **73.72** | 84.87 | 68.65 | 91.58 | 10.38 | [IRSTD-1K](pretrained/drc_mamba_irstd1k_best_iou.pth) |
+| NUAA-SIRST | 341 / 86 | **82.91** | **90.66** | **82.16** | **99.08** | **0.99** | [Download](pretrained/drc_mamba_nuaa_sirst_best_iou.pth) |
+| NUDT-SIRST | 663 / 664 | **89.65** | **94.54** | **90.39** | **98.62** | **6.69** | [Download](pretrained/drc_mamba_nudt_sirst_best_iou.pth) |
+| IRSTD-1K | 800 / 201 | **73.72** | **84.87** | **68.65** | **91.58** | **10.38** | [Download](pretrained/drc_mamba_irstd1k_best_iou.pth) |
 
-These are the DRC-Mamba results reported in Table 1 of the manuscript, using its fixed splits and evaluation protocol; they have not been independently recomputed for this README. IoU, F1, nIoU, and Pd are percentages. Fa is the number of pixels in unmatched predicted components per million evaluated pixels, so lower is better. The checkpoints are stored with [Git LFS](https://git-lfs.com/).
+IoU, F1, nIoU, and Pd are reported in percentage (%). Fa denotes false-alarm pixels in unmatched predicted components per million evaluated pixels.
 
 ## Method
 
-![Manuscript Figure 2: response decomposition and candidate preservation feed an encoder with multi-path Mamba blocks; a response-conditioned decoder produces the final prediction.](docs/figures/fig2-architecture.png)
+![Overall architecture of DRC-Mamba](docs/figures/fig2-architecture.png)
 
-*Manuscript Fig. 2 — overall architecture.* The processing order is **describe and preserve → contextual reasoning → conditioned suppression**:
+DRC-Mamba consists of four coordinated components:
 
-1. **Response decomposition** describes compact-source, background-structure, and interference-sensitive evidence without forcing an early binary choice.
-2. **Candidate-preservation branch (CP)** retains weak candidates and fine spatial detail before strong suppression.
-3. **Multi-path Mamba (MP-Mamba)** introduces long-range structural context along complementary scan paths.
-4. **Response-conditioned decoder (RCD)** uses retained target evidence to regulate interference suppression and reconstruct the segmentation map.
+1. **Response decomposition** constructs compact-source, background-structure, and interference-sensitive response fields to characterize locally ambiguous observations.
+2. **Candidate-preservation branch (CP)** retains plausible weak-target responses and fine spatial details before strong suppression is applied.
+3. **Multi-path Mamba (MP-Mamba)** introduces long-range structural context through complementary scanning paths to distinguish spatially isolated targets from structure-connected interference.
+4. **Response-conditioned decoder (RCD)** regulates structure-related suppression according to target-supporting responses and reconstructs the final segmentation map.
 
-The public implementation uses the same names as the manuscript: `ResponseDecompositionModule`, `CandidatePreservationBranch`, `EncoderStage1`–`EncoderStage4`, `MPMambaBlock`, and `ResponseConditionedDecoder`. The three response fields are exposed as `fs`, `fb`, and `ff`, matching $F_s$, $F_b$, and $F_f$.
+![Complementary response fields](docs/figures/fig1-response-fields.png)
 
-![Manuscript Figure 1: infrared scenes, ground truth, and three complementary response fields for two examples.](docs/figures/fig1-response-fields.png)
-
-*Manuscript Fig. 1 — why complementary fields matter.* A local observation can activate target-like and structure-related cues at the same time.
+*Complementary response fields for representative infrared scenes.*
 
 ### Qualitative comparison
 
-![Manuscript Figure 7: infrared scenes and segmentation outputs from several methods, DRC-Mamba, and ground truth.](docs/figures/fig7-qualitative-comparison.png)
+![Qualitative comparison](docs/figures/fig7-qualitative-comparison.png)
 
-*Manuscript Fig. 7 — weak targets, bright structures, and clutter.* Insets enlarge target regions. These examples illustrate behavior; the table above gives aggregate results.
+*Qualitative comparison on representative scenes containing weak targets, bright structures, and cluttered backgrounds.*
 
-## Quick start
+## Environment
 
-Install Git LFS before cloning so the three checkpoints are downloaded as weights rather than pointer files:
+The experiments were conducted with the following environment:
+
+| Package | Version |
+|---|---|
+| Python | 3.10 |
+| PyTorch | 2.1.1 + CUDA 11.8 |
+| torchvision | 0.16.1 + CUDA 11.8 |
+| mamba-ssm | 1.1.3 |
+| causal-conv1d | 1.1.3.post1 |
+| einops | 0.8.1 |
+| NumPy | 1.26.4 |
+| scikit-image | 0.22.0 |
+
+A recommended installation is:
+
+```bash
+conda create -n drc-mamba python=3.10 -y
+conda activate drc-mamba
+
+pip install torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+```
+
+Clone the repository with:
 
 ```bash
 git lfs install
@@ -49,57 +72,53 @@ git clone https://github.com/hhansan27-dotcom/DRC-Mamba.git
 cd DRC-Mamba
 ```
 
-### Environment
+## Datasets
 
-The code was developed and tested with the following main environment:
-
-- Python 3.10
-- PyTorch 2.1.1 + CUDA 11.8
-- `mamba-ssm==1.1.3`
-- `causal-conv1d==1.1.3.post1`
-- `einops==0.8.1`
-
-A recommended Conda setup is:
-
-```bash
-conda create -n drc-mamba python=3.10 -y
-conda activate drc-mamba
-python -m pip install --upgrade pip
-python -m pip install torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cu118
-python -m pip install -r requirements.txt
-```
-
-`mamba-ssm` and `causal-conv1d` contain CUDA extensions, so installation depends on the local PyTorch/CUDA/toolchain combination. The experiment environment used CUDA 11.8-compatible builds for PyTorch 2.1.1. If installation from PyPI fails on your platform, install compatible `causal-conv1d` and `mamba-ssm` wheels/builds for your PyTorch and CUDA versions. The model does not silently replace Mamba with another operator.
-
-### Prepare datasets
-
-The datasets can be obtained from their original project repositories:
+The datasets used in the experiments are publicly available from the following repositories:
 
 - **IRSTD-1K:** [RuiZhang97/ISNet](https://github.com/RuiZhang97/ISNet)
 - **NUAA-SIRST:** [YimianDai/sirst](https://github.com/YimianDai/sirst)
 - **NUDT-SIRST:** [YeRen123455/Infrared-Small-Target-Detection](https://github.com/YeRen123455/Infrared-Small-Target-Detection)
 
-Place grayscale infrared images, binary masks, and split files under `dataset/`:
+The fixed train/test partitions used in the experiments are:
+
+| Dataset | Training images | Test images | Split |
+|---|---:|---:|---|
+| NUAA-SIRST | 341 | 86 | 80/20 |
+| NUDT-SIRST | 663 | 664 | 50/50 |
+| IRSTD-1K | 800 | 201 | 80/20 |
+
+Arrange the datasets as follows:
 
 ```text
 dataset/
 ├── NUAA-SIRST/
 │   ├── images/
 │   ├── masks/
-│   └── 80_20/{train.txt,test.txt}
+│   └── 80_20/
+│       ├── train.txt
+│       └── test.txt
 ├── NUDT-SIRST/
 │   ├── images/
 │   ├── masks/
-│   └── 50_50/{train.txt,test.txt}
+│   └── 50_50/
+│       ├── train.txt
+│       └── test.txt
 └── IRSTD-1K/
     ├── images/
     ├── masks/
-    └── 80_20/{train.txt,test.txt}
+    └── 80_20/
+        ├── train.txt
+        └── test.txt
 ```
 
-Each split file contains one image ID per line without the extension; `.png` is the default. See [dataset/README.md](dataset/README.md) for the full layout. **Images, masks, and split files are not redistributed in this repository.** Reproducing the reported scores requires the same fixed partitions described in the manuscript; matching only the 80/20 or 50/50 ratio is insufficient.
+Each split file contains one image ID per line without the file extension. Images and masks are read as single-channel images; `.png` is used by default.
 
-### Evaluate a released checkpoint
+## Evaluation
+
+Evaluate the released checkpoints using:
+
+### NUAA-SIRST
 
 ```bash
 python evaluate.py \
@@ -108,18 +127,45 @@ python evaluate.py \
   --split 80_20
 ```
 
-For the other datasets, change `--checkpoint`, `--dataset`, and `--split` together:
+### NUDT-SIRST
 
-| Dataset | `--checkpoint` | `--split` |
-|---|---|---|
-| NUDT-SIRST | `pretrained/drc_mamba_nudt_sirst_best_iou.pth` | `50_50` |
-| IRSTD-1K | `pretrained/drc_mamba_irstd1k_best_iou.pth` | `80_20` |
+```bash
+python evaluate.py \
+  --checkpoint pretrained/drc_mamba_nudt_sirst_best_iou.pth \
+  --dataset NUDT-SIRST \
+  --split 50_50
+```
 
-The evaluator restores predictions to each image's original resolution before updating metrics. The default threshold is `0.5`; `--data-root`, `--suffix`, `--device`, and `--threshold` are available when needed. After cloning, `git lfs ls-files` should list all three checkpoints.
+### IRSTD-1K
 
-### Train
+```bash
+python evaluate.py \
+  --checkpoint pretrained/drc_mamba_irstd1k_best_iou.pth \
+  --dataset IRSTD-1K \
+  --split 80_20
+```
 
-The manuscript uses 400 epochs, AdamW, an initial learning rate of `1e-4`, batch size 4, 512 × 512 inputs, 20 warm-up epochs, and a cosine schedule. The released model uses GroupNorm.
+Predictions are resized to the original image resolution before metric computation. The binary threshold used for the tabulated results is **0.5**.
+
+## Training
+
+The main training settings used in the experiments are:
+
+| Setting | Value |
+|---|---:|
+| Input size | 512 × 512 |
+| Epochs | 400 |
+| Batch size | 4 |
+| Optimizer | AdamW |
+| Initial learning rate | 1 × 10⁻⁴ |
+| Weight decay | 1 × 10⁻⁴ |
+| Warm-up epochs | 20 |
+| Learning-rate schedule | Warm-up + cosine annealing |
+| Normalization | GroupNorm |
+| Mamba state dimension | 16 |
+| Mamba expansion ratio | 2 |
+
+Training commands:
 
 ```bash
 python train.py --dataset NUAA-SIRST --split 80_20
@@ -127,21 +173,23 @@ python train.py --dataset NUDT-SIRST --split 50_50
 python train.py --dataset IRSTD-1K --split 80_20
 ```
 
-Equivalent launch scripts are in [`scripts/`](scripts/). Run artifacts are written under `runs/` and ignored by Git. Resume with `--resume runs/<run>/last.pth`. Full training defaults and auxiliary loss coefficients are in [`drc_mamba/config.py`](drc_mamba/config.py).
+The best checkpoints are selected according to validation/test IoU during training and saved under the corresponding run directory.
 
-## Evaluation protocol
+## Evaluation Protocol
 
-- **IoU:** foreground intersection and union accumulated across all test images.
-- **F1:** derived from accumulated IoU as `2 × IoU / (1 + IoU)`.
+The evaluation protocol follows the manuscript:
+
+- **IoU:** foreground intersection over union accumulated over the complete test set.
+- **F1:** computed from accumulated IoU as `2 × IoU / (1 + IoU)`.
 - **nIoU:** mean image-wise IoU.
-- **Pd:** matched ground-truth connected components divided by ground-truth components; matching is one-to-one by nearest centroid within 3 pixels.
-- **Fa:** pixels in unmatched predicted connected components per million evaluated pixels. This differs from a per-pixel background false-positive rate.
+- **Pd:** target-level detection probability based on one-to-one nearest-centroid matching of eight-connected components.
+- **Fa:** pixels belonging to unmatched predicted components per million evaluated pixels.
 
-The tabulated results use a `0.5` binary threshold, eight-connected components, and no morphological post-processing. See [`drc_mamba/metrics.py`](drc_mamba/metrics.py) for the implementation.
+A predicted component is matched to a ground-truth target when the centroid distance is less than **3 pixels**. The threshold is fixed at **0.5** for the tabulated results. No connected-component filtering or morphological post-processing is applied.
 
 ## Citation
 
-If this repository supports your research, please cite the manuscript. It is currently a submitted preprint; no publication DOI is claimed here.
+If you find this work useful in your research, please cite:
 
 ```bibtex
 @misc{zhang2026drcmamba,
@@ -152,5 +200,3 @@ If this repository supports your research, please cite the manuscript. It is cur
   url    = {https://github.com/hhansan27-dotcom/DRC-Mamba}
 }
 ```
-
-The same authors are listed in [`CITATION.cff`](CITATION.cff). For questions about implementation or experiments, open a GitHub issue.
