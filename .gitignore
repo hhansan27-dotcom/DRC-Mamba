@@ -28,9 +28,22 @@ tensorboard/
 !pretrained/drc_mamba_nudt_sirst_best_iou.pth
 !pretrained/drc_mamba_irstd1k_best_iou.pth
 
-# Keep local datasets and split files out of the public repository
+# Keep local dataset files out of the public repository,
+# while retaining the train/test split files used in the experiments.
 /dataset/**
-!/dataset/README.md
+
+!/dataset/
+!/dataset/NUAA-SIRST/
+!/dataset/NUAA-SIRST/80_20/
+!/dataset/NUAA-SIRST/80_20/*.txt
+
+!/dataset/NUDT-SIRST/
+!/dataset/NUDT-SIRST/50_50/
+!/dataset/NUDT-SIRST/50_50/*.txt
+
+!/dataset/IRSTD-1K/
+!/dataset/IRSTD-1K/80_20/
+!/dataset/IRSTD-1K/80_20/*.txt
 
 # IDE / OS
 .vscode/
