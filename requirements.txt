@@ -1,7 +1,11 @@
-torch>=2.1
-mamba-ssm>=2.2
-numpy>=1.24
-Pillow>=9.5
-scikit-image>=0.21
-tqdm>=4.66
-pytest>=7.4
+# Tested environment: Python 3.10, PyTorch 2.1.1 + CUDA 11.8.
+# Install the CUDA-enabled PyTorch build first as described in README.md.
+
+torch==2.1.1
+numpy==1.26.4
+Pillow==12.3.0
+scikit-image==0.22.0
+tqdm==4.70.0
+einops==0.8.1
+causal-conv1d==1.1.3.post1
+mamba-ssm==1.1.3

@@ -47,18 +47,39 @@ Install Git LFS before cloning so the three checkpoints are downloaded as weight
 git lfs install
 git clone https://github.com/hhansan27-dotcom/DRC-Mamba.git
 cd DRC-Mamba
-python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# Windows PowerShell: .venv\Scripts\Activate.ps1
+```
+
+### Environment
+
+The code was developed and tested with the following main environment:
+
+- Python 3.10
+- PyTorch 2.1.1 + CUDA 11.8
+- `mamba-ssm==1.1.3`
+- `causal-conv1d==1.1.3.post1`
+- `einops==0.8.1`
+
+A recommended Conda setup is:
+
+```bash
+conda create -n drc-mamba python=3.10 -y
+conda activate drc-mamba
 python -m pip install --upgrade pip
+python -m pip install torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cu118
 python -m pip install -r requirements.txt
 ```
 
-Training is intended for a CUDA-capable PyTorch environment. `mamba-ssm` installation depends on the PyTorch/CUDA combination; if the requirements install fails, install compatible PyTorch and `mamba-ssm` builds for your platform. The model does not silently replace Mamba with another operator.
+`mamba-ssm` and `causal-conv1d` contain CUDA extensions, so installation depends on the local PyTorch/CUDA/toolchain combination. The experiment environment used CUDA 11.8-compatible builds for PyTorch 2.1.1. If installation from PyPI fails on your platform, install compatible `causal-conv1d` and `mamba-ssm` wheels/builds for your PyTorch and CUDA versions. The model does not silently replace Mamba with another operator.
 
 ### Prepare datasets
 
-Obtain the datasets from their original sources and place grayscale infrared images, binary masks, and split files under `dataset/`:
+The datasets can be obtained from their original project repositories:
+
+- **IRSTD-1K:** [RuiZhang97/ISNet](https://github.com/RuiZhang97/ISNet)
+- **NUAA-SIRST:** [YimianDai/sirst](https://github.com/YimianDai/sirst)
+- **NUDT-SIRST:** [YeRen123455/Infrared-Small-Target-Detection](https://github.com/YeRen123455/Infrared-Small-Target-Detection)
+
+Place grayscale infrared images, binary masks, and split files under `dataset/`:
 
 ```text
 dataset/
